@@ -457,6 +457,9 @@
     self.athleteDictionaryArray = [[NSMutableArray alloc] init];
     Executed = TRUE;
     self.tableData.allowsMultipleSelectionDuringEditing = YES;
+    
+    [self.editButton setTitle:@"Splits"];
+    [self.cancelButton setTitle:@"Done"];
     self.navigationItem.rightBarButtonItem = self.editButton;
     
     [self.tabBarController.navigationItem setTitle:self.workoutName];
