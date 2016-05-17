@@ -42,6 +42,7 @@
     refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(doLoad) forControlEvents:UIControlEventValueChanged];
     [self.tableData addSubview:refreshControl];
+    [self.tableData setAllowsSelection:NO];
     
 }
 

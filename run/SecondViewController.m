@@ -84,10 +84,14 @@
 
     [self setupRefreshControl];
     
+}
+
+
+- (void)viewDidAppear:(BOOL)animated {
+    if ([self.tableData indexPathForSelectedRow] != nil) {
+        [self.tableData deselectRowAtIndexPath:[self.tableData indexPathForSelectedRow] animated:YES];
     }
-
-
-
+}
 
 
 - (void)setupRefreshControl

@@ -68,6 +68,8 @@
     [self.tableData setEditing:YES animated:YES];
     [self updateButtonsToMatchTableState];
     [self showActionToolbar:YES];
+    [self.tableData setAllowsSelection:YES];
+    
 }
 
 - (IBAction)cancelAction:(id)sender
@@ -75,6 +77,7 @@
     [self.tableData setEditing:NO animated:YES];
     [self updateButtonsToMatchTableState];
     [self showActionToolbar:NO];
+    [self.tableData setAllowsSelection:NO];
 }
 
 - (void)updateSplitButtonTitle
@@ -485,6 +488,7 @@
     [actionToolbar setItems:@[splitButton,resetButton]];
     [self updateButtonsToMatchTableState];
     [self showActionToolbar:NO];
+    [self.tableData setAllowsSelection:NO];
         
 }
 

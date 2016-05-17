@@ -70,6 +70,10 @@
     if (!redirect) {
         [self performSegueWithIdentifier:@"logout" sender:self];
     }
+    if ([self.tableData indexPathForSelectedRow] != nil) {
+        [self.tableData deselectRowAtIndexPath:[self.tableData indexPathForSelectedRow] animated:YES];
+    }
+    
 }
 - (void)viewDidLoad
 {

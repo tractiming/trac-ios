@@ -71,6 +71,8 @@
 {
     [super viewDidLoad];
     
+    
+    self.tableData.allowsSelection = NO;
     self.navigationItem.rightBarButtonItem = self.editButton;
     self.tableData.allowsMultipleSelectionDuringEditing = YES;
     UIBarButtonItem *barButton = [[UIBarButtonItem alloc] init];
