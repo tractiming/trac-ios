@@ -220,6 +220,7 @@
     }
     //Put the reload here to premptively reload, becaues if its filtered, it will crash
     [self.tableData reloadRowsAtIndexPaths:selectedRows withRowAnimation:UITableViewRowAnimationNone];
+    //[self highlightUpdatedSplits:selectedRows];
     [self updateButtonsToMatchTableState];
     
     //Clear the selection arrays
@@ -301,6 +302,42 @@
     
 }
 
+
+- (void)highlightUpdatedSplits:(NSArray *)indexPaths {
+    for (NSIndexPath *indexPath in indexPaths) {
+        CustomCell* cell = [self.tableData cellForRowAtIndexPath:indexPath];
+        [self fadeCellTextColor:cell toColor:[UIColor colorWithRed:0.82 green:0.94 blue:0.75 alpha:1.0]];
+    }
+}
+
+- (void)fadeCellTextColor:(CustomCell *)cell toColor:(UIColor *)color {
+    UIColor *originalColor = cell.backgroundColor;
+    
+    [UIView animateWithDuration:0.5
+                          delay:0.0
+                        options:UIViewAnimationOptionTransitionCrossDissolve
+                     animations:^{
+                         cell.backgroundColor = color;
+                     }
+                     completion:^(BOOL finished) {
+                         [UIView animateWithDuration:0.5
+                                               delay:0.3
+                                             options:UIViewAnimationOptionTransitionCrossDissolve
+                                          animations:^{
+                                              cell.backgroundColor = originalColor;
+                                          }
+                                          completion:NULL];
+                     }];
+    
+//    [UIView animateWithDuration:0.5
+//                          delay:0.0
+//                        options:UIViewAnimationOptionAutoreverse | UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionTransitionCrossDissolve
+//                     animations:^{
+//                         cell.backgroundColor = color;
+//                     }
+//                     completion:NULL];
+    
+}
 
 - (void)resetAction:(id)sender{
     //[self splitAction:nil];
@@ -445,7 +482,7 @@
 
     UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
                                           initWithTarget:self action:@selector(handleLongPress:)];
-    lpgr.minimumPressDuration = 2.0; //seconds
+    lpgr.minimumPressDuration = 1.0; //seconds
     [self.tableData addGestureRecognizer:lpgr];
     
     
@@ -491,6 +528,7 @@
     [actionToolbar setItems:@[splitButton,resetButton]];
     [self updateButtonsToMatchTableState];
     [self showActionToolbar:NO];
+    
     [self.tableData setAllowsSelection:NO];
         
 }
