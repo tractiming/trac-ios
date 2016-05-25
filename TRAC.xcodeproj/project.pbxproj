@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		68292BD61CEBA43900C9BB47 /* SSSnackbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 68292BD51CEBA43900C9BB47 /* SSSnackbar.m */; };
+		6883C0E81CF4F9B4004B441B /* StopWatchControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 6883C0E71CF4F9B4004B441B /* StopWatchControl.m */; };
 		901DFC7F1C48E869003AC14B /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901DFC7E1C48E869003AC14B /* MessageUI.framework */; };
 		901DFC811C48E878003AC14B /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901DFC801C48E878003AC14B /* AssetsLibrary.framework */; };
 		901DFC831C48E881003AC14B /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 901DFC821C48E881003AC14B /* CoreMotion.framework */; };
@@ -74,6 +75,8 @@
 		650764AC7780D120745BF47A /* Pods-TRAC.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TRAC.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TRAC/Pods-TRAC.debug.xcconfig"; sourceTree = "<group>"; };
 		68292BD41CEBA43900C9BB47 /* SSSnackbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSSnackbar.h; sourceTree = "<group>"; };
 		68292BD51CEBA43900C9BB47 /* SSSnackbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSSnackbar.m; sourceTree = "<group>"; };
+		6883C0E61CF4F9B4004B441B /* StopWatchControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StopWatchControl.h; sourceTree = "<group>"; };
+		6883C0E71CF4F9B4004B441B /* StopWatchControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StopWatchControl.m; sourceTree = "<group>"; };
 		901DFC7E1C48E869003AC14B /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		901DFC801C48E878003AC14B /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		901DFC821C48E881003AC14B /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
@@ -275,6 +278,8 @@
 				9073779B1A37917000F86C7C /* CustomCelliPad.m */,
 				90A0698B1A360D05008CAA75 /* CustomCell.h */,
 				90A0698C1A360D05008CAA75 /* CustomCell.m */,
+				6883C0E61CF4F9B4004B441B /* StopWatchControl.h */,
+				6883C0E71CF4F9B4004B441B /* StopWatchControl.m */,
 				905456F819E9B11F002CE03C /* SiginViewController.h */,
 				905456F919E9B11F002CE03C /* SiginViewController.m */,
 				90FB8C9819F5BAE7006F1210 /* WorkoutViewController.h */,
@@ -503,6 +508,7 @@
 				905456FA19E9B11F002CE03C /* SiginViewController.m in Sources */,
 				90E687BA1915C48B0060B20B /* SecondViewController.m in Sources */,
 				90FB8C9A19F5BAE7006F1210 /* WorkoutViewController.m in Sources */,
+				6883C0E81CF4F9B4004B441B /* StopWatchControl.m in Sources */,
 				68292BD61CEBA43900C9BB47 /* SSSnackbar.m in Sources */,
 				9048ABDA1BF19C170062903B /* UIView+Toast.m in Sources */,
 				90E687AE1915C48B0060B20B /* AppDelegate.m in Sources */,
@@ -601,6 +607,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Griffin Kelly (8GZGC5RAVP)";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -640,6 +647,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Griffin Kelly (8GZGC5RAVP)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = "DISABLE_PUSH_NOTIFICATIONS=1";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

@@ -26,7 +26,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
 
 @implementation SSSnackbar
 
-+ (instancetype)snackbarWithMessage:(NSString *)message
++ (instancetype)snackbarWithMessage:(UILabel *)message
                          actionText:(NSString *)actionText
                            duration:(NSTimeInterval)duration
                         actionBlock:(void (^)(SSSnackbar *sender))actionBlock
@@ -41,7 +41,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
     return snackbar;
 }
 
-- (instancetype)initWithMessage:(NSString *)message
+- (instancetype)initWithMessage:(UILabel *)message
                      actionText:(NSString *)actionText
                        duration:(NSTimeInterval)duration
                     actionBlock:(void (^)(SSSnackbar *sender))actionBlock
@@ -53,12 +53,13 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
         _dismissalBlock = dismissalBlock;
         _duration = duration;
         
-        _messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
-        _messageLabel.text = message;
+        _messageLabel = message;
+        // _messageLabel.text = message;
+        // _messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        // _messageLabel.font = [UIFont systemFontOfSize:14.0];
+        // _messageLabel.textColor = [UIColor whiteColor];
+        //[_messageLabel sizeToFit];
         _messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        _messageLabel.font = [UIFont systemFontOfSize:14.0];
-        _messageLabel.textColor = [UIColor whiteColor];
-        [_messageLabel sizeToFit];
         
         _actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
         _actionButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -222,7 +223,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
         [self executeActionBlock];
         [self dismissAnimated:YES];
     }
-
+    
 }
 
 - (void)executeDismissalBlock {
@@ -239,7 +240,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
 
 - (NSArray *)hiddenVerticalLayoutConstraints {
     if (!_hiddenVerticalLayoutConstraints) {
-    
+        
         _hiddenVerticalLayoutConstraints =
         [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(44)]-(-50)-|"
                                                 options:0
@@ -282,7 +283,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
 }
 
 // This must be called after the snackbar is added to a view
-// Otherwise 
+// Otherwise
 - (void)setupContentLayout {
     NSMutableArray *constraints = [NSMutableArray new];
     [constraints addObjectsFromArray:

@@ -26,6 +26,7 @@
 #import "SSSnackbar.h"
 #import "TokenVerification.h"
 #import "TrueTime.h"
+#import "StopWatchControl.h"
 
 @interface FirstViewController() <UIActionSheetDelegate>
 
@@ -220,7 +221,7 @@
     }
     //Put the reload here to premptively reload, becaues if its filtered, it will crash
     [self.tableData reloadRowsAtIndexPaths:selectedRows withRowAnimation:UITableViewRowAnimationNone];
-    //[self highlightUpdatedSplits:selectedRows];
+    [self highlightUpdatedSplits:selectedRows];
     [self updateButtonsToMatchTableState];
     
     //Clear the selection arrays
@@ -1248,6 +1249,7 @@
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [((CustomCell *)[self.tableData cellForRowAtIndexPath:indexPath]).sw startWatch];
      NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:indexPath.row];
     // Update the delete button's title based on how many items are selected.
     NSLog(@"Dictionary %@",[tempDict valueForKey:@"athleteID"]);
@@ -1262,6 +1264,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
+    [((CustomCell *)[self.tableData cellForRowAtIndexPath:indexPath]).sw stopWatch];
+    
     NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:indexPath.row];
     NSDate *currentDate = [[NSDate alloc] init];
     NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
@@ -1322,6 +1327,16 @@
         cell.Split.text= [tempDict valueForKey:@"lastSplit"];
         cell.Total.text= [tempDict valueForKey:@"totalTime"];
 
+        UIView *bgColorView = [[UIView alloc] init];
+        bgColorView.backgroundColor = [UIColor colorWithRed:1.00 green:1.00 blue:0.80 alpha:1.0];
+        [cell setSelectedBackgroundView:bgColorView];
+        
+        CGFloat swDim = CGRectGetHeight(cell.frame) - 16;
+        cell.sw = [[StopWatchControl alloc] initWithFrame:CGRectMake(8, 8, swDim, swDim)];
+        [cell addSubview:cell.sw];
+        [cell.sw startWatch];
+        
+        [cell setAccessoryType:UITableViewCellAccessoryNone];
         
         return cell;
     }

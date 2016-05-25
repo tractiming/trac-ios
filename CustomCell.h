@@ -7,10 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "StopWatchControl.h"
 
 @interface CustomCell : UITableViewCell
 @property(weak, nonatomic) IBOutlet UILabel *Name;
 @property(weak, nonatomic) IBOutlet UILabel *Split;
 @property(weak, nonatomic) IBOutlet UILabel *Total;
+
+@property (strong, nonatomic) StopWatchControl *sw;
 
 @end
