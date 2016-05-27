@@ -1250,6 +1250,7 @@
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [((CustomCell *)[self.tableData cellForRowAtIndexPath:indexPath]).sw startWatch];
+    [((CustomCell *)[self.tableData cellForRowAtIndexPath:indexPath]).sw setHighlighted:NO];
      NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:indexPath.row];
     // Update the delete button's title based on how many items are selected.
     NSLog(@"Dictionary %@",[tempDict valueForKey:@"athleteID"]);
@@ -1266,6 +1267,7 @@
 {
     
     [((CustomCell *)[self.tableData cellForRowAtIndexPath:indexPath]).sw stopWatch];
+    [((CustomCell *)[self.tableData cellForRowAtIndexPath:indexPath]).sw setHighlighted:YES];
     
     NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:indexPath.row];
     NSDate *currentDate = [[NSDate alloc] init];
