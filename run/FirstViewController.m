@@ -428,16 +428,16 @@
     
     
     NSMutableArray *loadDocs = [TRACDatabase loadDocs:self.urlID];
-    for (TRACDoc* doc in loadDocs)
-    {
-        TRACDoc* datatoLoad = doc;
-        self.athleteIDArray = [[NSMutableArray alloc] initWithArray:datatoLoad.data.storedIDs];
-        self.utcTimeArray = [[NSMutableArray alloc] initWithArray:datatoLoad.data.storedToast];
-        self.resetValueArray = [[NSMutableArray alloc] initWithArray:datatoLoad.data.storedReset];
-        NSLog(@"Stored Array Values %@,%@,%@",datatoLoad.data.storedIDs,datatoLoad.data.storedToast,datatoLoad.data.storedReset);
-        
-    }
-    [TRACDatabase deletePath:self.urlID];
+//    for (TRACDoc* doc in loadDocs)
+//    {
+//        TRACDoc* datatoLoad = doc;
+//        self.athleteIDArray = [[NSMutableArray alloc] initWithArray:datatoLoad.data.storedIDs];
+//        self.utcTimeArray = [[NSMutableArray alloc] initWithArray:datatoLoad.data.storedToast];
+//        self.resetValueArray = [[NSMutableArray alloc] initWithArray:datatoLoad.data.storedReset];
+//        NSLog(@"Stored Array Values %@,%@,%@",datatoLoad.data.storedIDs,datatoLoad.data.storedToast,datatoLoad.data.storedReset);
+//        
+//    }
+//    [TRACDatabase deletePath:self.urlID];
     
     if([loadDocs count]== 0 || loadDocs == nil){
         NSLog(@"Init Arrays as doc is null");
