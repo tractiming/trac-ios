@@ -220,7 +220,7 @@
     }
     //Put the reload here to premptively reload, becaues if its filtered, it will crash
     [self.tableData reloadRowsAtIndexPaths:selectedRows withRowAnimation:UITableViewRowAnimationNone];
-    //[self highlightUpdatedSplits:selectedRows];
+    [self highlightUpdatedSplits:selectedRows];
     [self updateButtonsToMatchTableState];
     
     //Clear the selection arrays
