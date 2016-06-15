@@ -26,12 +26,14 @@
 #import "SSSnackbar.h"
 #import "TokenVerification.h"
 #import "TrueTime.h"
+#import "StopWatchControl.h"
 
-@interface FirstViewController() <UIActionSheetDelegate>
+@interface FirstViewController() <UIActionSheetDelegate, CustomCellDelegate>
 
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *editButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *cancelButton;
 @property (nonatomic, assign) CFTimeInterval ticks;
+@property (nonatomic, getter=isPseudoEditing) BOOL pseudoEdit;
 
 @end
 
@@ -65,6 +67,7 @@
 
 - (IBAction)editAction:(id)sender
 {
+    self.pseudoEdit = YES;
     [self.tableData setEditing:YES animated:YES];
     [self updateButtonsToMatchTableState];
     [self showActionToolbar:YES];
@@ -74,6 +77,7 @@
 
 - (IBAction)cancelAction:(id)sender
 {
+    self.pseudoEdit = NO;
     [self.tableData setEditing:NO animated:YES];
     [self updateButtonsToMatchTableState];
     [self showActionToolbar:NO];
@@ -311,12 +315,13 @@
 }
 
 - (void)fadeCellTextColor:(CustomCell *)cell toColor:(UIColor *)color {
-    UIColor *originalColor = cell.backgroundColor;
+    UIColor *originalColor = cell.backgroundcell.backgroundColor;
     
     [UIView animateWithDuration:0.5
                           delay:0.0
                         options:UIViewAnimationOptionTransitionCrossDissolve
                      animations:^{
+                         cell.backgroundcell.backgroundColor = color;
                          cell.backgroundColor = color;
                      }
                      completion:^(BOOL finished) {
@@ -324,6 +329,7 @@
                                                delay:0.3
                                              options:UIViewAnimationOptionTransitionCrossDissolve
                                           animations:^{
+                                              cell.backgroundcell.backgroundColor = originalColor;
                                               cell.backgroundColor = originalColor;
                                           }
                                           completion:NULL];
@@ -1244,10 +1250,14 @@
    
 }
 
-
+- (BOOL)tableView:(UITableView *)tableView shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath *)indexPath {
+    return NO;
+}
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [((CustomCell *)[self.tableData cellForRowAtIndexPath:indexPath]).sw startWatch];
+    [((CustomCell *)[self.tableData cellForRowAtIndexPath:indexPath]).sw setHighlighted:NO];
      NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:indexPath.row];
     // Update the delete button's title based on how many items are selected.
     NSLog(@"Dictionary %@",[tempDict valueForKey:@"athleteID"]);
@@ -1260,8 +1270,37 @@
     [self updateSplitButtonTitle];
 }
 
+- (void)selectCell:(CustomCell *)cell {
+    NSIndexPath *indexPath =  [self.tableData indexPathForCell:cell];
+    UITableView *tableView = self.tableData;
+    
+    if (!!cell.selected) {
+        [tableView deselectRowAtIndexPath:indexPath animated:NO];
+        
+        // Above method will not call the below delegate methods
+        if ([tableView.delegate respondsToSelector:@selector(tableView:willSelectRowAtIndexPath:)]) {
+            [tableView.delegate tableView:tableView willSelectRowAtIndexPath:indexPath];
+        }
+        if ([tableView.delegate respondsToSelector:@selector(tableView:didSelectRowAtIndexPath:)]) {
+            [tableView.delegate tableView:tableView didSelectRowAtIndexPath:indexPath];
+        }
+    } else {
+        [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        
+        // Above method will not call the below delegate methods
+        if ([tableView.delegate respondsToSelector:@selector(tableView:willDeselectRowAtIndexPath:)]) {
+            [tableView.delegate tableView:tableView willDeselectRowAtIndexPath:indexPath];
+        }
+        if ([tableView.delegate respondsToSelector:@selector(tableView:didDeselectRowAtIndexPath:)]) {
+            [tableView.delegate tableView:tableView didDeselectRowAtIndexPath:indexPath];
+        }
+    }
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+
+    
     NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:indexPath.row];
     NSDate *currentDate = [[NSDate alloc] init];
     NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
@@ -1322,7 +1361,19 @@
         cell.Split.text= [tempDict valueForKey:@"lastSplit"];
         cell.Total.text= [tempDict valueForKey:@"totalTime"];
 
+        UIView *bgColorView = [[UIView alloc] init];
+        bgColorView.backgroundColor = [UIColor colorWithRed:1.00 green:1.00 blue:0.80 alpha:1.0];
+        [cell setSelectedBackgroundView:bgColorView];
         
+        
+        cell.delegate = self;
+        [cell configureCell];
+        [cell setEditing:self.isEditing];
+        //CGFloat swDim = CGRectGetHeight(cell.frame) - 16;
+        //cell.sw = [[StopWatchControl alloc] initWithFrame:CGRectMake(8, 8, swDim, swDim)];
+        //[cell.customEditControl addSubview:cell.sw];
+        
+
         return cell;
     }
     
