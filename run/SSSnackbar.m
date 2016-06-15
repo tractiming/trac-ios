@@ -16,6 +16,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
 @property (strong, nonatomic) UIButton *actionButton;
 @property (strong, nonatomic) UIView *separator;
 @property (strong, nonatomic) NSTimer *dismissalTimer;
+@property (strong, nonatomic) UILabel *lebel;
 
 @property (strong, nonatomic) NSArray *hiddenVerticalLayoutConstraints;
 @property (strong, nonatomic) NSArray *visibleVerticalLayoutConstraints;
@@ -54,12 +55,14 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
         _duration = duration;
         
         _messageLabel = message;
+        _lebel = message;
         // _messageLabel.text = message;
         // _messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
         // _messageLabel.font = [UIFont systemFontOfSize:14.0];
         // _messageLabel.textColor = [UIColor whiteColor];
         //[_messageLabel sizeToFit];
         _messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        _lebel.translatesAutoresizingMaskIntoConstraints = NO;
         
         _actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
         _actionButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -76,6 +79,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
         _separator.translatesAutoresizingMaskIntoConstraints = NO;
         
         [self addSubview:_messageLabel];
+        [self addSubview:_lebel];
         [self addSubview:_actionButton];
         [self addSubview:_separator];
         
@@ -242,7 +246,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
     if (!_hiddenVerticalLayoutConstraints) {
         
         _hiddenVerticalLayoutConstraints =
-        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(44)]-(-50)-|"
+        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(88)]-(-50)-|"
                                                 options:0
                                                 metrics:nil
                                                   views:NSDictionaryOfVariableBindings(self)];
@@ -255,7 +259,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
     if (!_visibleVerticalLayoutConstraints) {
         
         _visibleVerticalLayoutConstraints =
-        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(44)]-(5)-|"
+        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(88)]-(5)-|"
                                                 options:0
                                                 metrics:nil
                                                   views:NSDictionaryOfVariableBindings(self)];
@@ -299,6 +303,14 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
     
     
     [constraints addObject:[NSLayoutConstraint constraintWithItem:_messageLabel
+                                                        attribute:NSLayoutAttributeCenterY
+                                                        relatedBy:NSLayoutRelationEqual
+                                                           toItem:self
+                                                        attribute:NSLayoutAttributeCenterY
+                                                       multiplier:1
+                                                         constant:0]];
+    
+    [constraints addObject:[NSLayoutConstraint constraintWithItem:_lebel
                                                         attribute:NSLayoutAttributeCenterY
                                                         relatedBy:NSLayoutRelationEqual
                                                            toItem:self
