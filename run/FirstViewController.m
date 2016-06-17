@@ -53,6 +53,7 @@
     UIBarButtonItem *resetButton;
     NSMutableString *countedTime;
     UILabel *toastText;
+    UILabel *toastText2;
     UIView *customView;
     //double CurrentTime;
     double tempTime;
@@ -576,8 +577,14 @@
         [toastText setTextColor:[UIColor whiteColor]];
         [toastText setCenter:customView.center];
         
+        toastText2 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 20)];
+        toastText2.adjustsFontSizeToFitWidth = true;
+        toastText2.textAlignment = NSTextAlignmentCenter;
+        [toastText2 setTextColor:[UIColor whiteColor]];
+        [toastText2 setCenter:customView.center];
+        
         SSSnackbar *snackbar;
-        snackbar = [self snackbarForQuickRunningItem:toastText atIndexPath:indexPath];
+        snackbar = [self snackbarForQuickRunningItem:toastText snackbarForQuickRunningItemTwo:toastText2 atIndexPath:indexPath];
         [snackbar show];
        
     } else {
@@ -587,9 +594,10 @@
     // More coming soon...
 }
 
-- (SSSnackbar *)snackbarForQuickRunningItem:(UILabel *)itemView atIndexPath:(NSIndexPath *)indexPath {
+- (SSSnackbar *)snackbarForQuickRunningItem:(UILabel *)itemView snackbarForQuickRunningItemTwo:(UILabel *)itemViewTwo atIndexPath:(NSIndexPath *)indexPath {
     
     SSSnackbar *snackbar = [SSSnackbar snackbarWithMessage:itemView
+                                        initWithSecondMessage: itemViewTwo
                                                 actionText:@"Hide"
                                                   duration:99999999
                                                actionBlock:^(SSSnackbar *sender){[self.timer invalidate];
@@ -623,6 +631,7 @@
         double seconds = trunc(remainder/1000.0);
         double milli = fmod(time,1000.0)/100;
         toastText.text = [NSString stringWithFormat:@"%02.0f:%02.0f:%02.0f.%01.0f", hours, minutes, seconds,milli];
+        toastText2.text = [NSString stringWithFormat:@"%02.0f:%02.0f:%02.0f.%01.0f", hours/2, minutes/2, seconds/2,milli];
 
 }
 

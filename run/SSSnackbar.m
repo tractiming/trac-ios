@@ -29,12 +29,14 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
 @implementation SSSnackbar
 
 + (instancetype)snackbarWithMessage:(UILabel *)message
+                    initWithSecondMessage:(UILabel *)messageTwo
                          actionText:(NSString *)actionText
                            duration:(NSTimeInterval)duration
                         actionBlock:(void (^)(SSSnackbar *sender))actionBlock
                      dismissalBlock:(void (^)(SSSnackbar *sender))dismissalBlock {
     
     SSSnackbar *snackbar = [[SSSnackbar alloc] initWithMessage:message
+                                            initWithSecondMessage:messageTwo
                                                     actionText:actionText
                                                       duration:duration
                                                    actionBlock:actionBlock
@@ -44,6 +46,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
 }
 
 - (instancetype)initWithMessage:(UILabel *)message
+                initWithSecondMessage:(UILabel *)messageTwo
                      actionText:(NSString *)actionText
                        duration:(NSTimeInterval)duration
                     actionBlock:(void (^)(SSSnackbar *sender))actionBlock
@@ -58,7 +61,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
         _messageLabel = message;
         _lebel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
 
-        _lebel.text=@"7:14:12.1";
+        _lebel = messageTwo;
         _lebel.textColor = [UIColor whiteColor];
         
         _masterLabel = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
