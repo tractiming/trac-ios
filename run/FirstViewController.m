@@ -632,7 +632,9 @@
     {
         //NSLog(@"Temp Time: %f, True Time: %f",tempTime,[[NSDate date] timeIntervalSince1970 ]*1000);
         time = [[NSDate date] timeIntervalSince1970 ]*1000 - tempTime;
-        NSLog(@"Write Date Time %f",tempTime);
+        NSLog(@"Write Date Time %f , %f",tempTime, tempTime2);
+        NSLog(@"Diff Arrays? %@, %@", lastSeenTimeArray, firstSeenTimeArray);
+        
         time_split = [[NSDate date] timeIntervalSince1970 ]*1000 - tempTime2;
     }
 
@@ -782,13 +784,13 @@
                    NSDate *dateFromString2 = [[NSDate alloc] init];
                    NSTimeZone *timeZone2 = [NSTimeZone timeZoneWithName:@"UTC"];
                    [dateFormatter2 setTimeZone:timeZone2];
-                   dateFromString2 = [dateFormatter2 dateFromString:split];
+                   dateFromString2 = [dateFormatter2 dateFromString:split2];
                    NSLog(@"The Date From String is = %@",dateFromString2);
                    NSTimeInterval timeInMiliseconds2 = [dateFromString2 timeIntervalSince1970]*1000;
                    
                    NSString *strTimeStamp2 = [NSString stringWithFormat:@"%f",timeInMiliseconds2];
-                   NSLog(@"The Date is = %@",split2);
-                   NSLog(@"The Timestamp is = %@",strTimeStamp2);
+                   NSLog(@"The Last Date is = %@",split2);
+                   NSLog(@"The Last Timestamp is = %@",strTimeStamp2);
                    [lastSeenTimeArray addObject:strTimeStamp2];
                    
                    
@@ -943,7 +945,7 @@
                     NSLog(@"Setting Zero");
                     [athleteDictionary setObject:[NSNumber numberWithInt:0] forKey:@"countStart"];
                     [athleteDictionary setObject:[firstSeenTimeArray objectAtIndex:index] forKey:@"dateTime"];
-                    [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_time"];
+                    [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_seen"];
                 }
                 else{
                     NSLog(@"Varying Time");
@@ -951,7 +953,7 @@
                         NSLog(@"Write Zero");
                         [athleteDictionary setObject:[NSNumber numberWithInt:0] forKey:@"countStart"];
                         [athleteDictionary setObject:[firstSeenTimeArray objectAtIndex:index] forKey:@"dateTime"];
-                        [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_time"];
+                        [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_seen"];
                     }
                     else{
                         NSLog(@"Try to write value?");
@@ -963,18 +965,18 @@
                         if ([[self.utcTimeArray objectAtIndex:indexOfAthlete] integerValue] > [[firstSeenTimeArray objectAtIndex:index] integerValue] && [[firstSeenTimeArray objectAtIndex:index] integerValue] != 0) {
                             
                             [athleteDictionary setObject:[self.utcTimeArray objectAtIndex:indexOfAthlete] forKey:@"dateTime"];
-                            [athleteDictionary setObject:[self.utcTimeArray objectAtIndex:indexOfAthlete] forKey:@"last_time"];
+                            [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_seen"];
                             [athleteDictionary setObject:[self.resetValueArray objectAtIndex:indexOfAthlete] forKey:@"countStart"];
                         }
                         else if ([[firstSeenTimeArray objectAtIndex:index] integerValue] == 0){
                             [athleteDictionary setObject:[NSNumber numberWithInt:0] forKey:@"countStart"];
                             [athleteDictionary setObject:[firstSeenTimeArray objectAtIndex:index] forKey:@"dateTime"];
-                            [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_time"];
+                            [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_seen"];
                         }
                         else{
                             NSLog(@"read to firstseen, idex %lu, index of athlete %lu", index, indexOfAthlete);
                             [athleteDictionary setObject:[firstSeenTimeArray objectAtIndex:index] forKey:@"dateTime"];
-                            [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_time"];
+                            [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_seen"];
                             [athleteDictionary setObject:[self.resetValueArray objectAtIndex:indexOfAthlete] forKey:@"countStart"];
                             NSLog(@"Gets here??");
                         }
@@ -1018,14 +1020,14 @@
                             //update the dictionary here for that index
                             NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:closestIndex];
                             [tempDict removeObjectForKey:@"dateTime"];
-                            [tempDict removeObjectForKey:@"last_time"];
+                            [tempDict removeObjectForKey:@"last_seen"];
                             
                             
                             //Add in running clock time for when started
                             if ([self.first_seen objectAtIndex:index] == [NSNull null]){
                                 
                                 [tempDict setObject:[NSNumber numberWithDouble:0] forKey:@"dateTime"];
-                                [tempDict setObject:[NSNumber numberWithDouble:0] forKey:@"last_time"];
+                                [tempDict setObject:[NSNumber numberWithDouble:0] forKey:@"last_seen"];
                             }
                             else{
                                 newStartRunningTime =[self.first_seen objectAtIndex:index];
@@ -1258,6 +1260,7 @@
                     if ([self.first_seen objectAtIndex:index] == [NSNull null]){
                         NSLog(@"First seen here");
                         [athleteDictionary setObject:[NSNumber numberWithDouble:0] forKey:@"dateTime"];
+                        [athleteDictionary setObject:[NSNumber numberWithDouble:0] forKey:@"last_seen"];
                     }
                     else{
                         NSLog(@"Second seen here");
@@ -1273,6 +1276,20 @@
                         NSString *strTimeStamp = [NSString stringWithFormat:@"%f",timeInMiliseconds];
                         NSLog(@"%@",strTimeStamp);
                         [athleteDictionary setObject:strTimeStamp forKey:@"dateTime"];
+                        
+
+                        newLastRunningTime =[self.last_seen objectAtIndex:index];
+                        NSDateFormatter *dateFormatter2 = [[NSDateFormatter alloc] init];
+                        [dateFormatter2 setDateFormat:@"yyyy/MM/dd HH:mm:ss.SSS"];
+                        NSDate *dateFromString2 = [[NSDate alloc] init];
+                        NSTimeZone *timeZone2 = [NSTimeZone timeZoneWithName:@"UTC"];
+                        [dateFormatter2 setTimeZone:timeZone2];
+                        dateFromString2 = [dateFormatter dateFromString:newLastRunningTime];
+                        NSTimeInterval timeInMiliseconds2 = [dateFromString timeIntervalSince1970]*1000;
+                        
+                        NSString *strTimeStamp2 = [NSString stringWithFormat:@"%f",timeInMiliseconds2];
+                        NSLog(@"%@",strTimeStamp2);
+                        [athleteDictionary setObject:strTimeStamp2 forKey:@"last_seen"];
                     }
 
                     
