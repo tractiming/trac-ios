@@ -1049,7 +1049,7 @@
                                 NSTimeZone *timeZone2 = [NSTimeZone timeZoneWithName:@"UTC"];
                                 [dateFormatter2 setTimeZone:timeZone2];
                                 dateFromString2 = [dateFormatter2 dateFromString:newLastRunningTime];
-                                NSTimeInterval timeInMiliseconds2 = [dateFromString timeIntervalSince1970]*1000;
+                                NSTimeInterval timeInMiliseconds2 = [dateFromString2 timeIntervalSince1970]*1000;
                                 
                                 NSString *strTimeStamp2 = [NSString stringWithFormat:@"%f",timeInMiliseconds2];
                                 [tempDict setObject:strTimeStamp2 forKey:@"last_seen"];
@@ -1152,17 +1152,37 @@
                             elapsedtime = [NSString stringWithFormat:@"%@:%@",minutes,seconds];
 
                         }
-
+                        
+                            
+                        //Update latest split time
+                        newLastRunningTime =[self.last_seen objectAtIndex:index];
+                        NSDateFormatter *dateFormatter2 = [[NSDateFormatter alloc] init];
+                        [dateFormatter2 setDateFormat:@"yyyy/MM/dd HH:mm:ss.SSS"];
+                        NSDate *dateFromString2 = [[NSDate alloc] init];
+                        NSTimeZone *timeZone2 = [NSTimeZone timeZoneWithName:@"UTC"];
+                        [dateFormatter2 setTimeZone:timeZone2];
+                        dateFromString2 = [dateFormatter2 dateFromString:newLastRunningTime];
+                        NSTimeInterval timeInMiliseconds2 = [dateFromString2 timeIntervalSince1970]*1000;
+                        
+                        NSString *strTimeStamp2 = [NSString stringWithFormat:@"%f",timeInMiliseconds2];
+                        
                         
                         
                         //update the dictionary here for that index
                         NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:closestIndex];
                         [tempDict removeObjectForKey:@"lastSplit"];
+                        [tempDict setObject:strTimeStamp2 forKey:@"last_seen"];
                         [tempDict removeObjectForKey:@"numberSplits"];
                         [tempDict removeObjectForKey:@"totalTime"];
                         [tempDict setObject:superlasttime forKey:@"lastSplit"];
                         [tempDict setObject:[NSNumber numberWithInt:universalIndex] forKey:@"numberSplits"];
                         [tempDict setObject:elapsedtime forKey:@"totalTime"];
+                            
+                        if (runningClockIndexPath.row == closestIndex){
+                            tempTime = [[tempDict valueForKey:@"dateTime"] doubleValue];
+                            tempTime2 = [[tempDict valueForKey:@"last_seen"] doubleValue];
+                            NSLog(@"Time %f", tempTime);
+                        }
                         
                         [self.tableData reloadRowsAtIndexPaths:rowsToReload withRowAnimation:UITableViewRowAnimationNone];
                         }

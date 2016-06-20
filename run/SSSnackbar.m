@@ -69,7 +69,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
         [_masterLabel addSubview:_messageLabel];
         [_masterLabel addSubview:_lebel];
         //[_masterLabel addConstraint:[NSLayoutConstraint constraintWithItem:_lebel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_masterLabel attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0]];
-        [_masterLabel addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[_masterLabel]-(6)-[_lebel]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_masterLabel, _lebel)]];
+        [_masterLabel addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[_masterLabel]-(4)-[_lebel]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_masterLabel, _lebel)]];
         [_masterLabel addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[_masterLabel]-(-21)-[_messageLabel]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_masterLabel, _messageLabel)]];
         [_masterLabel addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[_masterLabel]-(2)-[_messageLabel]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_masterLabel, _messageLabel)]];
         [_masterLabel addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[_masterLabel]-(2)-[_lebel]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_masterLabel, _lebel)]];
@@ -266,7 +266,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
     if (!_hiddenVerticalLayoutConstraints) {
         
         _hiddenVerticalLayoutConstraints =
-        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(66)]-(-50)-|"
+        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(55)]-(-50)-|"
                                                 options:0
                                                 metrics:nil
                                                   views:NSDictionaryOfVariableBindings(self)];
@@ -279,7 +279,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
     if (!_visibleVerticalLayoutConstraints) {
         
         _visibleVerticalLayoutConstraints =
-        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(66)]-(5)-|"
+        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(55)]-(5)-|"
                                                 options:0
                                                 metrics:nil
                                                   views:NSDictionaryOfVariableBindings(self)];
