@@ -42,7 +42,8 @@ IB_DESIGNABLE
  *  @param dismissalBlock A block to be called when the snackbar is removed from the screen by any means other than the user having pressed the action button. Can be nil.
  *
  */
-- (instancetype)initWithMessage:(NSString *)message
+- (instancetype)initWithMessage:(UILabel *)message
+                    initWithSecondMessage:(UILabel *)messageTwo
                      actionText:(NSString *)actionText
                        duration:(NSTimeInterval)duration
                     actionBlock:(void (^)(SSSnackbar *sender))actionBlock
@@ -56,7 +57,8 @@ IB_DESIGNABLE
  *  @param actionBlock    A block to be called when the user presses the action button.
  *  @param dismissalBlock A block to be called when the snackbar is removed from the screen by any means other than the user having pressed the action button. Can be nil.
  */
-+ (instancetype)snackbarWithMessage:(NSString *)message
++ (instancetype)snackbarWithMessage:(UILabel *)message
+                    initWithSecondMessage:(UILabel *)messageTwo
                          actionText:(NSString *)actionText
                            duration:(NSTimeInterval)duration
                         actionBlock:(void (^)(SSSnackbar *sender))actionBlock

@@ -16,6 +16,8 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
 @property (strong, nonatomic) UIButton *actionButton;
 @property (strong, nonatomic) UIView *separator;
 @property (strong, nonatomic) NSTimer *dismissalTimer;
+@property (strong, nonatomic) UILabel *lebel;
+@property (strong, nonatomic) UIView *masterLabel;
 
 @property (strong, nonatomic) NSArray *hiddenVerticalLayoutConstraints;
 @property (strong, nonatomic) NSArray *visibleVerticalLayoutConstraints;
@@ -27,12 +29,14 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
 @implementation SSSnackbar
 
 + (instancetype)snackbarWithMessage:(UILabel *)message
+                    initWithSecondMessage:(UILabel *)messageTwo
                          actionText:(NSString *)actionText
                            duration:(NSTimeInterval)duration
                         actionBlock:(void (^)(SSSnackbar *sender))actionBlock
                      dismissalBlock:(void (^)(SSSnackbar *sender))dismissalBlock {
     
     SSSnackbar *snackbar = [[SSSnackbar alloc] initWithMessage:message
+                                            initWithSecondMessage:messageTwo
                                                     actionText:actionText
                                                       duration:duration
                                                    actionBlock:actionBlock
@@ -42,6 +46,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
 }
 
 - (instancetype)initWithMessage:(UILabel *)message
+                initWithSecondMessage:(UILabel *)messageTwo
                      actionText:(NSString *)actionText
                        duration:(NSTimeInterval)duration
                     actionBlock:(void (^)(SSSnackbar *sender))actionBlock
@@ -54,12 +59,29 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
         _duration = duration;
         
         _messageLabel = message;
+        _lebel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
+
+        _lebel = messageTwo;
+        _lebel.textColor = [UIColor whiteColor];
+        
+        _masterLabel = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+        _masterLabel.backgroundColor = [UIColor greenColor];
+        [_masterLabel addSubview:_messageLabel];
+        [_masterLabel addSubview:_lebel];
+        //[_masterLabel addConstraint:[NSLayoutConstraint constraintWithItem:_lebel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:_masterLabel attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0]];
+        [_masterLabel addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[_masterLabel]-(4)-[_lebel]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_masterLabel, _lebel)]];
+        [_masterLabel addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[_masterLabel]-(-21)-[_messageLabel]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_masterLabel, _messageLabel)]];
+        [_masterLabel addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[_masterLabel]-(2)-[_messageLabel]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_masterLabel, _messageLabel)]];
+        [_masterLabel addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[_masterLabel]-(2)-[_lebel]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(_masterLabel, _lebel)]];
+        
         // _messageLabel.text = message;
         // _messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
         // _messageLabel.font = [UIFont systemFontOfSize:14.0];
         // _messageLabel.textColor = [UIColor whiteColor];
         //[_messageLabel sizeToFit];
         _messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        _lebel.translatesAutoresizingMaskIntoConstraints = NO;
+        _masterLabel.translatesAutoresizingMaskIntoConstraints = NO;
         
         _actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
         _actionButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -75,7 +97,9 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
         _separator.backgroundColor = [UIColor colorWithWhite:0.99 alpha:.1];
         _separator.translatesAutoresizingMaskIntoConstraints = NO;
         
-        [self addSubview:_messageLabel];
+        //[self addSubview:_messageLabel];
+        //[self addSubview:_lebel];
+        [self addSubview:_masterLabel];
         [self addSubview:_actionButton];
         [self addSubview:_separator];
         
@@ -242,7 +266,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
     if (!_hiddenVerticalLayoutConstraints) {
         
         _hiddenVerticalLayoutConstraints =
-        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(44)]-(-50)-|"
+        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(55)]-(-50)-|"
                                                 options:0
                                                 metrics:nil
                                                   views:NSDictionaryOfVariableBindings(self)];
@@ -255,7 +279,7 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
     if (!_visibleVerticalLayoutConstraints) {
         
         _visibleVerticalLayoutConstraints =
-        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(44)]-(5)-|"
+        [NSLayoutConstraint constraintsWithVisualFormat:@"V:[self(55)]-(5)-|"
                                                 options:0
                                                 metrics:nil
                                                   views:NSDictionaryOfVariableBindings(self)];
@@ -287,10 +311,10 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
 - (void)setupContentLayout {
     NSMutableArray *constraints = [NSMutableArray new];
     [constraints addObjectsFromArray:
-     [NSLayoutConstraint constraintsWithVisualFormat:@"|-8-[_messageLabel]-(>=8)-[_separator(1)]-8-[_actionButton]-8-|"
+     [NSLayoutConstraint constraintsWithVisualFormat:@"|-8-[_masterLabel]-(>=8)-[_separator(1)]-8-[_actionButton]-8-|"
                                              options:NSLayoutFormatAlignAllCenterY
                                              metrics:nil
-                                               views:NSDictionaryOfVariableBindings(_messageLabel, _actionButton, _separator)]];
+                                               views:NSDictionaryOfVariableBindings(_masterLabel, _actionButton, _separator)]];
     [constraints addObjectsFromArray:
      [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[_separator]-0-|"
                                              options:0
@@ -298,13 +322,14 @@ static SSSnackbar *currentlyVisibleSnackbar = nil;
                                                views:NSDictionaryOfVariableBindings(_separator)]];
     
     
-    [constraints addObject:[NSLayoutConstraint constraintWithItem:_messageLabel
+    [constraints addObject:[NSLayoutConstraint constraintWithItem:_masterLabel
                                                         attribute:NSLayoutAttributeCenterY
                                                         relatedBy:NSLayoutRelationEqual
                                                            toItem:self
                                                         attribute:NSLayoutAttributeCenterY
                                                        multiplier:1
                                                          constant:0]];
+    
     
     [self addConstraints:constraints];
     [self layoutIfNeeded];

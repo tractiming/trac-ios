@@ -48,6 +48,7 @@
     UIToolbar *actionToolbar;
     NSString* elapsedtime;
     NSString *newStartRunningTime;
+    NSString *newLastRunningTime;
     BOOL Executed;
     NSUInteger universalIndex;
     NSArray *superlasttime;
@@ -55,12 +56,15 @@
     UIBarButtonItem *resetButton;
     NSMutableString *countedTime;
     UILabel *toastText;
+    UILabel *toastText2;
     UIView *customView;
     //double CurrentTime;
     double tempTime;
+    double tempTime2;
     double tempTimeMax;
     NSIndexPath *runningClockIndexPath;
     NSMutableArray *firstSeenTimeArray;
+    NSMutableArray *lastSeenTimeArray;
     
 }
 @synthesize tracDoc = _tracDoc;
@@ -165,7 +169,9 @@
             //For the toast to keep time
             NSLog(@"%@, %@", [tempDict valueForKey:@"countStart"], [tempDict valueForKey:@"numberSplits"]);
             double tempHolder =[[tempDict valueForKey:@"numberSplits"] doubleValue];
-            
+            //Remove last seen split and add new one in.
+            [tempDict removeObjectForKey:@"last_seen"];
+            [tempDict setObject:[self.selectedRunnersToast objectAtIndex:indexOfTheObject] forKey:@"last_seen"];
             
             if ([[tempDict valueForKey:@"lastSplit"] isEqualToString:@"DNS"]){
                 NSLog(@"Entered DNS?");
@@ -184,6 +190,7 @@
             if (selectionIndex.row == runningClockIndexPath.row){
                 NSLog(@"It entered?");
                 tempTime = [[tempDict valueForKey:@"dateTime"] doubleValue];
+                tempTime2 = [[tempDict valueForKey:@"last_seen"] doubleValue];
             }
             
             
@@ -205,6 +212,9 @@
             //For the toast to keep time
             NSLog(@"%@, %@", [tempDict valueForKey:@"countStart"], [tempDict valueForKey:@"numberSplits"]);
             double tempHolder =[[tempDict valueForKey:@"numberSplits"] doubleValue];
+            //For split time, reset and reassign
+            [tempDict removeObjectForKey:@"dateTime"];
+            [tempDict setObject:[NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970 ]*1000] forKey:@"dateTime"];
             
             if ([[tempDict valueForKey:@"lastSplit"] isEqualToString:@"DNS"]){
                 NSLog(@"Entered DNS?");
@@ -565,6 +575,7 @@
         
         
         tempTime = [[[self.athleteDictionaryArray objectAtIndex:indexPath.row] valueForKey:@"dateTime"] doubleValue];
+        tempTime2 = [[[self.athleteDictionaryArray objectAtIndex:indexPath.row] valueForKey:@"last_seen"] doubleValue];
         //store the index path to later do update if updated...
         runningClockIndexPath = indexPath;
         if (tempTime != 0){
@@ -582,8 +593,14 @@
         [toastText setTextColor:[UIColor whiteColor]];
         [toastText setCenter:customView.center];
         
+        toastText2 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 20)];
+        toastText2.adjustsFontSizeToFitWidth = true;
+        toastText2.textAlignment = NSTextAlignmentCenter;
+        [toastText2 setTextColor:[UIColor whiteColor]];
+        [toastText2 setCenter:customView.center];
+        
         SSSnackbar *snackbar;
-        snackbar = [self snackbarForQuickRunningItem:toastText atIndexPath:indexPath];
+        snackbar = [self snackbarForQuickRunningItem:toastText snackbarForQuickRunningItemTwo:toastText2 atIndexPath:indexPath];
         [snackbar show];
        
     } else {
@@ -593,9 +610,10 @@
     // More coming soon...
 }
 
-- (SSSnackbar *)snackbarForQuickRunningItem:(UILabel *)itemView atIndexPath:(NSIndexPath *)indexPath {
+- (SSSnackbar *)snackbarForQuickRunningItem:(UILabel *)itemView snackbarForQuickRunningItemTwo:(UILabel *)itemViewTwo atIndexPath:(NSIndexPath *)indexPath {
     
     SSSnackbar *snackbar = [SSSnackbar snackbarWithMessage:itemView
+                                        initWithSecondMessage: itemViewTwo
                                                 actionText:@"Hide"
                                                   duration:99999999
                                                actionBlock:^(SSSnackbar *sender){[self.timer invalidate];
@@ -613,12 +631,17 @@
     // However, this is just an example to demonstrate how to stop some ongoing activity, so we can live with that inaccuracy.
     _ticks = 0.1;
     double time = 0;
+    double time_split = 0;
     //time += _ticks;
     
     if (tempTime != 0)
     {
         //NSLog(@"Temp Time: %f, True Time: %f",tempTime,[[NSDate date] timeIntervalSince1970 ]*1000);
-         time = [[NSDate date] timeIntervalSince1970 ]*1000 - tempTime;
+        time = [[NSDate date] timeIntervalSince1970 ]*1000 - tempTime;
+        NSLog(@"Write Date Time %f , %f",tempTime, tempTime2);
+        NSLog(@"Diff Arrays? %@, %@", lastSeenTimeArray, firstSeenTimeArray);
+        
+        time_split = [[NSDate date] timeIntervalSince1970 ]*1000 - tempTime2;
     }
 
         //NSLog(@"Time Current:  %f",time);
@@ -629,6 +652,14 @@
         double seconds = trunc(remainder/1000.0);
         double milli = fmod(time,1000.0)/100;
         toastText.text = [NSString stringWithFormat:@"%02.0f:%02.0f:%02.0f.%01.0f", hours, minutes, seconds,milli];
+    
+        double hours_split = trunc(time_split / 3600000.0);
+        double remainder_split = fmod(time_split, 3600000.0);
+        double minutes_split = trunc(remainder_split / 60000.0);
+        remainder_split = fmod(remainder_split, 60000.0);
+        double seconds_split = trunc(remainder_split/1000.0);
+        double milli_split = fmod(time_split,1000.0)/100;
+        toastText2.text = [NSString stringWithFormat:@"%02.0f:%02.0f:%02.0f.%01.0f", hours_split, minutes_split, seconds_split, milli_split];
 
 }
 
@@ -722,17 +753,21 @@
         self.interval = [results valueForKey:@"splits"];
         self.has_split = [results valueForKey:@"has_split"];
         self.first_seen = [results valueForKey:@"first_seen"];
+        self.last_seen = [results valueForKey:@"last_seen"];
        
        if(Executed == TRUE){
            //Download the times for first seen.
            firstSeenTimeArray = [[NSMutableArray alloc] init];
+           lastSeenTimeArray = [[NSMutableArray alloc] init];
            for (int jj=0; jj<[self.first_seen count]; jj++){
                
                if ([self.first_seen objectAtIndex:jj] == [NSNull null]){
                    
                    [firstSeenTimeArray addObject:[NSNumber numberWithDouble:0]];
+                   [lastSeenTimeArray addObject:[NSNumber numberWithDouble:0]];
                }
                else{
+                   //Math to convert str to usable timestamp for First Seen
                    NSString *split = [self.first_seen objectAtIndex:jj];
                    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
                    [dateFormatter setDateFormat:@"yyyy/MM/dd HH:mm:ss.SSS"];
@@ -747,6 +782,24 @@
                    NSLog(@"The Date is = %@",split);
                    NSLog(@"The Timestamp is = %@",strTimeStamp);
                    [firstSeenTimeArray addObject:strTimeStamp];
+                   
+                   //Math for Last Seen
+                   NSString *split2 = [self.last_seen objectAtIndex:jj];
+                   NSDateFormatter *dateFormatter2 = [[NSDateFormatter alloc] init];
+                   [dateFormatter2 setDateFormat:@"yyyy/MM/dd HH:mm:ss.SSS"];
+                   NSDate *dateFromString2 = [[NSDate alloc] init];
+                   NSTimeZone *timeZone2 = [NSTimeZone timeZoneWithName:@"UTC"];
+                   [dateFormatter2 setTimeZone:timeZone2];
+                   dateFromString2 = [dateFormatter2 dateFromString:split2];
+                   NSLog(@"The Date From String is = %@",dateFromString2);
+                   NSTimeInterval timeInMiliseconds2 = [dateFromString2 timeIntervalSince1970]*1000;
+                   
+                   NSString *strTimeStamp2 = [NSString stringWithFormat:@"%f",timeInMiliseconds2];
+                   NSLog(@"The Last Date is = %@",split2);
+                   NSLog(@"The Last Timestamp is = %@",strTimeStamp2);
+                   [lastSeenTimeArray addObject:strTimeStamp2];
+                   
+                   
                }
                
            }
@@ -891,11 +944,14 @@
                 [athleteDictionary setObject:[self.runners objectAtIndex:index] forKey:@"name"];
                 [athleteDictionary setObject:[self.runnerID objectAtIndex:index] forKey:@"athleteID"];
                 [athleteDictionary setObject:superlasttime forKey:@"lastSplit"];
+                
+                
                 if (self.utcTimeArray == nil || [self.utcTimeArray count] == 0)
                 {
                     NSLog(@"Setting Zero");
                     [athleteDictionary setObject:[NSNumber numberWithInt:0] forKey:@"countStart"];
                     [athleteDictionary setObject:[firstSeenTimeArray objectAtIndex:index] forKey:@"dateTime"];
+                    [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_seen"];
                 }
                 else{
                     NSLog(@"Varying Time");
@@ -903,6 +959,7 @@
                         NSLog(@"Write Zero");
                         [athleteDictionary setObject:[NSNumber numberWithInt:0] forKey:@"countStart"];
                         [athleteDictionary setObject:[firstSeenTimeArray objectAtIndex:index] forKey:@"dateTime"];
+                        [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_seen"];
                     }
                     else{
                         NSLog(@"Try to write value?");
@@ -914,15 +971,18 @@
                         if ([[self.utcTimeArray objectAtIndex:indexOfAthlete] integerValue] > [[firstSeenTimeArray objectAtIndex:index] integerValue] && [[firstSeenTimeArray objectAtIndex:index] integerValue] != 0) {
                             
                             [athleteDictionary setObject:[self.utcTimeArray objectAtIndex:indexOfAthlete] forKey:@"dateTime"];
+                            [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_seen"];
                             [athleteDictionary setObject:[self.resetValueArray objectAtIndex:indexOfAthlete] forKey:@"countStart"];
                         }
                         else if ([[firstSeenTimeArray objectAtIndex:index] integerValue] == 0){
                             [athleteDictionary setObject:[NSNumber numberWithInt:0] forKey:@"countStart"];
                             [athleteDictionary setObject:[firstSeenTimeArray objectAtIndex:index] forKey:@"dateTime"];
+                            [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_seen"];
                         }
                         else{
                             NSLog(@"read to firstseen, idex %lu, index of athlete %lu", index, indexOfAthlete);
                             [athleteDictionary setObject:[firstSeenTimeArray objectAtIndex:index] forKey:@"dateTime"];
+                            [athleteDictionary setObject:[lastSeenTimeArray objectAtIndex:index] forKey:@"last_seen"];
                             [athleteDictionary setObject:[self.resetValueArray objectAtIndex:indexOfAthlete] forKey:@"countStart"];
                             NSLog(@"Gets here??");
                         }
@@ -966,12 +1026,14 @@
                             //update the dictionary here for that index
                             NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:closestIndex];
                             [tempDict removeObjectForKey:@"dateTime"];
+                            [tempDict removeObjectForKey:@"last_seen"];
                             
                             
                             //Add in running clock time for when started
                             if ([self.first_seen objectAtIndex:index] == [NSNull null]){
                                 
                                 [tempDict setObject:[NSNumber numberWithDouble:0] forKey:@"dateTime"];
+                                [tempDict setObject:[NSNumber numberWithDouble:0] forKey:@"last_seen"];
                             }
                             else{
                                 newStartRunningTime =[self.first_seen objectAtIndex:index];
@@ -985,6 +1047,18 @@
                                 
                                 NSString *strTimeStamp = [NSString stringWithFormat:@"%f",timeInMiliseconds];
                                 [tempDict setObject:strTimeStamp forKey:@"dateTime"];
+                                
+                                newLastRunningTime =[self.last_seen objectAtIndex:index];
+                                NSDateFormatter *dateFormatter2 = [[NSDateFormatter alloc] init];
+                                [dateFormatter2 setDateFormat:@"yyyy/MM/dd HH:mm:ss.SSS"];
+                                NSDate *dateFromString2 = [[NSDate alloc] init];
+                                NSTimeZone *timeZone2 = [NSTimeZone timeZoneWithName:@"UTC"];
+                                [dateFormatter2 setTimeZone:timeZone2];
+                                dateFromString2 = [dateFormatter2 dateFromString:newLastRunningTime];
+                                NSTimeInterval timeInMiliseconds2 = [dateFromString2 timeIntervalSince1970]*1000;
+                                
+                                NSString *strTimeStamp2 = [NSString stringWithFormat:@"%f",timeInMiliseconds2];
+                                [tempDict setObject:strTimeStamp2 forKey:@"last_seen"];
                             }
 
                             
@@ -998,6 +1072,7 @@
                             NSLog(@"Running Clock %ld %lu",(long)runningClockIndexPath.row,(unsigned long)closestIndex);
                             if (runningClockIndexPath.row == closestIndex){
                                 tempTime = [[tempDict valueForKey:@"dateTime"] doubleValue];
+                                tempTime2 = [[tempDict valueForKey:@"last_seen"] doubleValue];
                                 NSLog(@"Time %f", tempTime);
                             }
                             
@@ -1083,17 +1158,37 @@
                             elapsedtime = [NSString stringWithFormat:@"%@:%@",minutes,seconds];
 
                         }
-
+                        
+                            
+                        //Update latest split time
+                        newLastRunningTime =[self.last_seen objectAtIndex:index];
+                        NSDateFormatter *dateFormatter2 = [[NSDateFormatter alloc] init];
+                        [dateFormatter2 setDateFormat:@"yyyy/MM/dd HH:mm:ss.SSS"];
+                        NSDate *dateFromString2 = [[NSDate alloc] init];
+                        NSTimeZone *timeZone2 = [NSTimeZone timeZoneWithName:@"UTC"];
+                        [dateFormatter2 setTimeZone:timeZone2];
+                        dateFromString2 = [dateFormatter2 dateFromString:newLastRunningTime];
+                        NSTimeInterval timeInMiliseconds2 = [dateFromString2 timeIntervalSince1970]*1000;
+                        
+                        NSString *strTimeStamp2 = [NSString stringWithFormat:@"%f",timeInMiliseconds2];
+                        
                         
                         
                         //update the dictionary here for that index
                         NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:closestIndex];
                         [tempDict removeObjectForKey:@"lastSplit"];
+                        [tempDict setObject:strTimeStamp2 forKey:@"last_seen"];
                         [tempDict removeObjectForKey:@"numberSplits"];
                         [tempDict removeObjectForKey:@"totalTime"];
                         [tempDict setObject:superlasttime forKey:@"lastSplit"];
                         [tempDict setObject:[NSNumber numberWithInt:universalIndex] forKey:@"numberSplits"];
                         [tempDict setObject:elapsedtime forKey:@"totalTime"];
+                            
+                        if (runningClockIndexPath.row == closestIndex){
+                            tempTime = [[tempDict valueForKey:@"dateTime"] doubleValue];
+                            tempTime2 = [[tempDict valueForKey:@"last_seen"] doubleValue];
+                            NSLog(@"Time %f", tempTime);
+                        }
                         
                         [self.tableData reloadRowsAtIndexPaths:rowsToReload withRowAnimation:UITableViewRowAnimationNone];
                         }
@@ -1191,6 +1286,7 @@
                     if ([self.first_seen objectAtIndex:index] == [NSNull null]){
                         NSLog(@"First seen here");
                         [athleteDictionary setObject:[NSNumber numberWithDouble:0] forKey:@"dateTime"];
+                        [athleteDictionary setObject:[NSNumber numberWithDouble:0] forKey:@"last_seen"];
                     }
                     else{
                         NSLog(@"Second seen here");
@@ -1206,6 +1302,20 @@
                         NSString *strTimeStamp = [NSString stringWithFormat:@"%f",timeInMiliseconds];
                         NSLog(@"%@",strTimeStamp);
                         [athleteDictionary setObject:strTimeStamp forKey:@"dateTime"];
+                        
+
+                        newLastRunningTime =[self.last_seen objectAtIndex:index];
+                        NSDateFormatter *dateFormatter2 = [[NSDateFormatter alloc] init];
+                        [dateFormatter2 setDateFormat:@"yyyy/MM/dd HH:mm:ss.SSS"];
+                        NSDate *dateFromString2 = [[NSDate alloc] init];
+                        NSTimeZone *timeZone2 = [NSTimeZone timeZoneWithName:@"UTC"];
+                        [dateFormatter2 setTimeZone:timeZone2];
+                        dateFromString2 = [dateFormatter dateFromString:newLastRunningTime];
+                        NSTimeInterval timeInMiliseconds2 = [dateFromString timeIntervalSince1970]*1000;
+                        
+                        NSString *strTimeStamp2 = [NSString stringWithFormat:@"%f",timeInMiliseconds2];
+                        NSLog(@"%@",strTimeStamp2);
+                        [athleteDictionary setObject:strTimeStamp2 forKey:@"last_seen"];
                     }
 
                     
