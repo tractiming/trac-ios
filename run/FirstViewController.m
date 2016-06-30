@@ -1440,13 +1440,13 @@
     
     //depending on ipad or phone use different custom cell spacing, and fill in cell data
     if (IDIOM ==IPAD) {
-        static NSString *simpleTableIdentifier = @"myCelliPad";
-        CustomCelliPad *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
+        static NSString *simpleTableIdentifier = @"myCell";
+        CustomCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
         
         if (cell == nil) {
             
-            [tableView registerNib:[UINib nibWithNibName:@"CustomCelliPad" bundle:nil] forCellReuseIdentifier:@"myCelliPad"];
-            cell = [tableView dequeueReusableCellWithIdentifier:@"myCelliPad"];
+            [tableView registerNib:[UINib nibWithNibName:@"CustomCell" bundle:nil] forCellReuseIdentifier:@"myCell"];
+            cell = [tableView dequeueReusableCellWithIdentifier:@"myCell"];
         }
         
         NSMutableDictionary *tempDict = [self.athleteDictionaryArray objectAtIndex:indexPath.row];
@@ -1454,6 +1454,16 @@
         cell.Name.text = [tempDict valueForKey:@"name"];
         cell.Split.text= [tempDict valueForKey:@"lastSplit"];
         cell.Total.text= [tempDict valueForKey:@"totalTime"];
+        
+        UIView *bgColorView = [[UIView alloc] init];
+        bgColorView.backgroundColor = [UIColor colorWithRed:1.00 green:1.00 blue:0.80 alpha:1.0];
+        [cell setSelectedBackgroundView:bgColorView];
+        
+        
+        cell.delegate = self;
+        [cell configureCell];
+        [cell setEditing:self.isEditing];
+        
         return cell;
     }
     else{
