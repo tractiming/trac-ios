@@ -394,7 +394,7 @@
 				ORGANIZATIONNAME = "Griffin Kelly";
 				TargetAttributes = {
 					90E687991915C48B0060B20B = {
-						DevelopmentTeam = 844J8ZU5CE;
+						DevelopmentTeam = 8GZGC5RAVP;
 						SystemCapabilities = {
 							com.apple.GameCenter = {
 								enabled = 0;
@@ -454,21 +454,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		45AA8C3D746F307938E11AAC /* Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TRAC/Pods-TRAC-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		4CED149D27ADA173E8D63F6D /* 📦 Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
